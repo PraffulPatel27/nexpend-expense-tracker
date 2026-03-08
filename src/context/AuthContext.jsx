@@ -14,6 +14,7 @@ import { auth, googleProvider, db } from "../firebase/firebaseConfig";
 import { logActivity, logError } from "../utils/logger";
 
 const AuthContext = createContext();
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
 
 export function useAuth() {
     return useContext(AuthContext);
@@ -32,12 +33,12 @@ export function AuthProvider({ children }) {
         await setDoc(doc(db, "users", user.uid), {
             uid: user.uid,
             email: user.email,
-            name: user.email === "admin@test.com" ? "Prafful" : (name || user.email.split("@")[0]),
+            name: user.email === ADMIN_EMAIL ? "Prafful" : (name || user.email.split("@")[0]),
             photoURL: "",
             currency: "INR",
             monthlyBudget: 0, // Enforce 0 as starting budget per user request
             baseCurrency: "INR",
-            role: user.email === "admin@test.com" ? "admin" : "user",
+            role: user.email === ADMIN_EMAIL ? "admin" : "user",
             isDisabled: false,
             createdAt: new Date().toISOString()
         });
@@ -83,12 +84,12 @@ export function AuthProvider({ children }) {
             await setDoc(docRef, {
                 uid: user.uid,
                 email: user.email,
-                name: user.email === "admin@test.com" ? "Prafful" : (user.displayName || user.email.split("@")[0]),
+                name: user.email === ADMIN_EMAIL ? "Prafful" : (user.displayName || user.email.split("@")[0]),
                 photoURL: user.photoURL || "",
                 currency: "INR",       // Default display currency
                 monthlyBudget: 0,      // Enforce 0 as starting budget
                 baseCurrency: "INR",   // The currency transactions are stored in
-                role: user.email === "admin@test.com" ? "admin" : "user",
+                role: user.email === ADMIN_EMAIL ? "admin" : "user",
                 isDisabled: false,
                 createdAt: new Date().toISOString()
             });
@@ -171,7 +172,7 @@ export function AuthProvider({ children }) {
                 setupSecurity();
 
                 // Exclusive Admin Enforcer: Prafful (admin@test.com)
-                if (user.email === "admin@test.com") {
+                if (user.email === ADMIN_EMAIL) {
                     try {
                         const myRef = doc(db, "users", user.uid);
                         await updateDoc(myRef, { role: "admin", name: "Prafful" });
@@ -183,7 +184,7 @@ export function AuthProvider({ children }) {
 
                         const batch = writeBatch(db);
                         snapshot.forEach(d => {
-                            if (d.data().email !== "admin@test.com") {
+                            if (d.data().email !== ADMIN_EMAIL) {
                                 batch.update(d.ref, { role: "user" }); // Demote remaining admins
                             }
                         });
