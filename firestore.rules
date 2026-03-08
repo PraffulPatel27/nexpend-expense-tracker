@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'user') == 'admin';
+    }
+
+    function isNotDisabled() {
+      return request.auth != null && (
+        !exists(/databases/$(database)/documents/users/$(request.auth.uid)) ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('isDisabled', false) == false
+      );
+    }
+
+    // 1. User Profiles & Custom Categories
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin() && isNotDisabled();
+      
+      // Update/Create validation
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin()) && isNotDisabled()
+                   && (!request.resource.data.keys().hasAll(['name']) || (request.resource.data.name is string && request.resource.data.name.size() <= 100))
+                   && (!request.resource.data.keys().hasAll(['monthlyBudget']) || (request.resource.data.monthlyBudget is number && request.resource.data.monthlyBudget >= 0));
+      
+      // Users can delete their own profile, or Admins can delete any profile
+      allow delete: if (request.auth != null && request.auth.uid == userId) || (isAdmin() && isNotDisabled());
+    }
+
+    // 2. Expenses Data
+    match /expenses/{expenseId} {
+      // Read access: User can read their own, Admin can read any (needed for deletion querying)
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin()) && isNotDisabled();
+      
+      // Expense Schema Validation Function
+      function isValidSchema(expense) {
+        return expense.userId == request.auth.uid
+            // Strictly block any unexpected fields from being injected
+            && expense.keys().hasOnly(['userId', 'title', 'category', 'amount', 'type', 'date', 'createdAt', 'updatedAt'])
+            && expense.title is string && expense.title.size() > 0 && expense.title.size() <= 50
+            && expense.category is string && expense.category.size() > 0 && expense.category.size() <= 50
+            && expense.amount is number
+            && expense.type in ['expense', 'income']
+            && expense.date is string && expense.date.size() == 10 // "YYYY-MM-DD"
+            // createdAt is mandatory
+            && expense.createdAt is timestamp
+            // updatedAt is optional (only present after an edit)
+            && (!expense.keys().hasAll(['updatedAt']) || expense.updatedAt is timestamp);
+      }
+      
+      // For new documents, strictly enforce the schema
+      allow create: if request.auth != null && isNotDisabled() && isValidSchema(request.resource.data);
+      
+      // For updating documents, strictly enforce the updated schema
+      allow update: if request.auth != null && resource.data.userId == request.auth.uid && isNotDisabled() && isValidSchema(request.resource.data);
+
+      // Delete access: User can delete their own, Admin can delete any
+      allow delete: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin()) && isNotDisabled();
+    }
+    
+    // 3. Rate Limiting Data
+    match /rate_limits/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId && isNotDisabled()
+                        && (!request.resource.data.keys().hasAll(['count']) || request.resource.data.count is number)
+                        && (!request.resource.data.keys().hasAll(['windowStart']) || request.resource.data.windowStart is number);
+      allow delete: if request.auth != null && (request.auth.uid == userId || isAdmin()) && isNotDisabled();
+    }
+
+    // 4. System & Audit Logs
+    match /logs/{logId} {
+      allow create: if request.auth != null;
+      allow read: if isAdmin() && isNotDisabled();
+      allow update: if false;
+      allow delete: if isAdmin() && isNotDisabled();
+    }
+
+    // 5. Global App Settings
+    match /settings/{settingId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin() && isNotDisabled();
+    }
+  }
+}
