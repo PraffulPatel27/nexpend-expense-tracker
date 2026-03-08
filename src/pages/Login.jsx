@@ -95,7 +95,7 @@ export default function Login() {
     return (
         <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4">
             {loading && <FullScreenLoader message={isResetMode ? "Sending reset email..." : "Signing in..."} />}
-            <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl border border-slate-100">
+            <div className="w-full max-w-md p-6 sm:p-8 bg-white rounded-2xl shadow-xl border border-slate-100">
                 <h2 className="text-center mb-8 text-3xl font-bold text-slate-800 tracking-tight">
                     {isResetMode ? "Reset Password" : "Log In"}
                 </h2>

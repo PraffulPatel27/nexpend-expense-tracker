@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { addExpense } from "../firebase/expenseService";
 import { addCustomCategory } from "../firebase/categoryService";
@@ -203,18 +203,18 @@ export default function AddExpense() {
                             </div>
 
                             {isAddingCategory ? (
-                                <div className="flex gap-2">
+                                <div className="flex flex-col sm:flex-row gap-2">
                                     <input
                                         type="text"
                                         placeholder="Category name"
                                         value={newCategoryName}
                                         onChange={(e) => setNewCategoryName(e.target.value)}
-                                        className="flex-1 p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        className="flex-1 p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-full sm:w-auto"
                                     />
                                     <button
                                         type="button"
                                         onClick={handleAddCustomCategory}
-                                        className="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold border-none cursor-pointer shadow-sm hover:bg-blue-700"
+                                        className="bg-blue-600 text-white px-4 py-3 sm:py-2 rounded-xl text-xs sm:text-sm font-bold border-none cursor-pointer shadow-sm hover:bg-blue-700 w-full sm:w-auto"
                                     >
                                         Add
                                     </button>

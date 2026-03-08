@@ -258,7 +258,7 @@ export default function Analytics() {
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                             <h2 className="text-lg font-bold text-slate-900 m-0">Custom Analytics Viewer</h2>
                             {/* Data source selector */}
-                            <div className="flex gap-2 bg-slate-100 p-1 rounded-xl w-fit">
+                            <div className="flex flex-wrap gap-2 bg-slate-100 p-1 rounded-xl w-fit">
                                 {DATA_SOURCES.map(src => (
                                     <button
                                         key={src.id}

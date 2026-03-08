@@ -136,7 +136,7 @@ const AdminPanel = () => {
                     </div>
                 )}
 
-                <div className="flex bg-gray-900/50 p-1 rounded-xl mb-8 w-fit border border-gray-800">
+                <div className="flex flex-col sm:flex-row bg-gray-900/50 p-1 rounded-xl mb-8 w-full sm:w-fit border border-gray-800 gap-1">
                     <button
                         onClick={() => setActiveTab("users")}
                         className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "users" ? "bg-blue-600 text-white shadow-lg" : "text-gray-400 hover:text-gray-200"}`}

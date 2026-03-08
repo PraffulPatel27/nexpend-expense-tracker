@@ -60,7 +60,7 @@ export default function Signup() {
     return (
         <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4">
             {loading && <FullScreenLoader message="Creating your account..." />}
-            <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl border border-slate-100">
+            <div className="w-full max-w-md p-6 sm:p-8 bg-white rounded-2xl shadow-xl border border-slate-100">
                 <h2 className="text-center mb-8 text-3xl font-bold text-slate-800 tracking-tight">Sign Up</h2>
                 {error && <div className="bg-red-50 text-red-600 p-3 rounded-xl mb-6 text-center text-sm font-medium border border-red-100">{error}</div>}
 

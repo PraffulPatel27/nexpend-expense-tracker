@@ -333,7 +333,7 @@ export default function Dashboard() {
                             </p>
                         </>
                     ) : (
-                        <div className="flex gap-3 items-center">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                             <input
                                 type="number"
                                 min="1"
@@ -341,12 +341,12 @@ export default function Dashboard() {
                                 placeholder={`e.g. ${userCurrencyCode === "INR" ? "10000" : "500"}`}
                                 value={budgetInput}
                                 onChange={e => setBudgetInput(e.target.value)}
-                                className="flex-1 p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium"
+                                className="flex-1 p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium w-full sm:w-auto"
                             />
                             <button
                                 onClick={handleSaveBudget}
                                 disabled={savingBudget}
-                                className="bg-blue-600 text-white px-5 py-3 rounded-xl font-bold text-sm border-none cursor-pointer hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
+                                className="bg-blue-600 text-white px-5 py-3 rounded-xl font-bold text-sm border-none cursor-pointer hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 w-full sm:w-auto"
                             >
                                 {savingBudget ? "Saving..." : "Set Budget"}
                             </button>
