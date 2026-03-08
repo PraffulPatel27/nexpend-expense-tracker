@@ -1,6 +1,4 @@
-# Nexpend - Smart Expense Tracker
-
-![Nexpend Banner](public/logo.png)
+# Nexpend.
 
 ## 📌 What is Nexpend?
 
